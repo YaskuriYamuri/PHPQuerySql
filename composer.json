@@ -1,0 +1,10 @@
+{
+    "name": "yaskuriyamuri/phpquerysql",
+    "authors": [
+        {
+            "name": "Yaskuri Yamuri",
+            "email": "yaskuriyamuri@gmail.com"
+        }
+    ],
+    "require": {}
+}
