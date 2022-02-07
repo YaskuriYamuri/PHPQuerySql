@@ -3,8 +3,11 @@
     "authors": [
         {
             "name": "Yaskuri Yamuri",
-            "email": "yaskuriyamuri@gmail.com"
+            "email": "yaskuriyamuri@gmail.com",
+            "role": "Original Developer"
         }
     ],
-    "require": {}
+    "autoload": {
+        "files": [ "engine/PhpQuerySql.php" ]
+    }
 }
