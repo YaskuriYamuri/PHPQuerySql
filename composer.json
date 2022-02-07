@@ -8,6 +8,6 @@
         }
     ],
     "autoload": {
-        "files": [ "index.php","engine/PhpQuerySql.php" ]
+        "files": [ "index.php"]
     }
 }
