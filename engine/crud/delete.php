@@ -48,7 +48,7 @@ class delete
                 break;
         endswitch;
     }
-    public function PDOBindParam(array &$paramArray): self
+    public function PDOBindParam(array &$paramArray)
     {
         $tmp = [];
         foreach ($this->where as $k => &$v) :
@@ -57,8 +57,9 @@ class delete
         $paramArray = $tmp;
         return $this;
     }
-    public function __toString(): string
+    public function __toString()
     {
+        try{
         if (count($this->where) == 0) throw new \RuntimeException("Update value where not set");
         switch ($this->GetParent()->GetParent()->GetBuilderType()):
             case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
@@ -92,7 +93,9 @@ class delete
             default:
                 throw new \RuntimeException("Delete unknown builder type");
                 break;
-        endswitch;
+        endswitch;} catch (\Exception $th) {
+            return $th->getMessage();
+        }
     }
     function __debugInfo()
     {

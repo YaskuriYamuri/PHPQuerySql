@@ -24,7 +24,7 @@ class update
         $this->LogicAnd();
     }
 
-    function __call(string $name, array $params)
+    function __call($name, array $params)
     {
         switch ($name):
             case "SetValue":
@@ -60,7 +60,7 @@ class update
                 break;
         endswitch;
     }
-    public function PDOBindParam(array &$paramArray): self
+    public function PDOBindParam(array &$paramArray)
     {
         $tmp = [];
         foreach ($this->items as $k => &$v) :
@@ -72,61 +72,64 @@ class update
         $paramArray = $tmp;
         return $this;
     }
-    public function __toString(): string
+    public function __toString()
     {
-
-        if (count($this->items) == 0) throw new \RuntimeException("Update value set not set");
-        if (count($this->where) == 0) throw new \RuntimeException("Update value where not set");
-        # UPDATE tb SET field=:setvalue where field=:wherevalue
-        switch ($this->GetParent()->GetParent()->GetBuilderType()):
-            case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
-                $prmF = [];
-                $prmW = [];
-                foreach ($this->items as $key  => $val) {
-                    $prmF[] = "`$key`= :{$this->prefixSet}$key";
-                }
-                foreach ($this->where as $key => $val) {
-                    $prmW[] = "`$val[0]`=:{$this->prefixWhere}" . $val[0] . $key;
-                }
-                return sprintf("UPDATE `%s` SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
-                break;
-            case \PhpQuerySql\PHPQUERYSQL_TYPE_MSSQL:
-                $prmF = [];
-                $prmW = [];
-                foreach ($this->items as $key => $val) {
-                    $prmF[] = "[$key]= :{$this->prefixSet}$key";
-                }
-                foreach ($this->where as $key => $val) {
-                    $prmW[] = "[$val[0]]=:{$this->prefixWhere}" . $val[0] . $key;
-                }
-                return sprintf("UPDATE [%s] SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
-                break;
-            case \PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql:
-                $prmF = [];
-                $prmW = [];
-                foreach ($this->items as $key => $val) {
-                    $prmF[] = "\"$key\"= :{$this->prefixSet}$key";
-                }
-                foreach ($this->where as $key => $val) {
-                    $prmW[] = "\"$val[0]\"=:{$this->prefixWhere}" . $val[0] . $key;
-                }
-                return sprintf("UPDATE \"%s\" SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
-                break;
-            case \PhpQuerySql\PHPQUERYSQL_TYPE_ORACLE:
-                $prmF = [];
-                $prmW = [];
-                foreach ($this->items as $key => $val) {
-                    $prmF[] = "\"$key\"= :{$this->prefixSet}$key";
-                }
-                foreach ($this->where as $key => $val) {
-                    $prmW[] = "\"$val[0]\"=:{$this->prefixWhere}" . $val[0] . $key;
-                }
-                return sprintf("UPDATE \"%s\" SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
-                break;
-            default:
-                throw new \RuntimeException("Update unknown builder type");
-                break;
-        endswitch;
+        try {
+            if (count($this->items) == 0) throw new \RuntimeException("Update value set not set");
+            if (count($this->where) == 0) throw new \RuntimeException("Update value where not set");
+            # UPDATE tb SET field=:setvalue where field=:wherevalue
+            switch ($this->GetParent()->GetParent()->GetBuilderType()):
+                case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
+                    $prmF = [];
+                    $prmW = [];
+                    foreach ($this->items as $key  => $val) {
+                        $prmF[] = "`$key`= :{$this->prefixSet}$key";
+                    }
+                    foreach ($this->where as $key => $val) {
+                        $prmW[] = "`$val[0]`=:{$this->prefixWhere}" . $val[0] . $key;
+                    }
+                    return sprintf("UPDATE `%s` SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
+                    break;
+                case \PhpQuerySql\PHPQUERYSQL_TYPE_MSSQL:
+                    $prmF = [];
+                    $prmW = [];
+                    foreach ($this->items as $key => $val) {
+                        $prmF[] = "[$key]= :{$this->prefixSet}$key";
+                    }
+                    foreach ($this->where as $key => $val) {
+                        $prmW[] = "[$val[0]]=:{$this->prefixWhere}" . $val[0] . $key;
+                    }
+                    return sprintf("UPDATE [%s] SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
+                    break;
+                case \PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql:
+                    $prmF = [];
+                    $prmW = [];
+                    foreach ($this->items as $key => $val) {
+                        $prmF[] = "\"$key\"= :{$this->prefixSet}$key";
+                    }
+                    foreach ($this->where as $key => $val) {
+                        $prmW[] = "\"$val[0]\"=:{$this->prefixWhere}" . $val[0] . $key;
+                    }
+                    return sprintf("UPDATE \"%s\" SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
+                    break;
+                case \PhpQuerySql\PHPQUERYSQL_TYPE_ORACLE:
+                    $prmF = [];
+                    $prmW = [];
+                    foreach ($this->items as $key => $val) {
+                        $prmF[] = "\"$key\"= :{$this->prefixSet}$key";
+                    }
+                    foreach ($this->where as $key => $val) {
+                        $prmW[] = "\"$val[0]\"=:{$this->prefixWhere}" . $val[0] . $key;
+                    }
+                    return sprintf("UPDATE \"%s\" SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
+                    break;
+                default:
+                    throw new \RuntimeException("Update unknown builder type");
+                    break;
+            endswitch;
+        } catch (\Exception $th) {
+            return $th->getMessage();
+        }
     }
     function __debugInfo()
     {

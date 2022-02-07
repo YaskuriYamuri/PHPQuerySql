@@ -18,7 +18,7 @@ class insert
         $this->items = [];
         $this->prmPrefix = "prm_";
     }
-    function __call(string $name, array $params)
+    function __call( $name, array $params)
     {
         switch ($name):
             case "SetValue":
@@ -36,7 +36,7 @@ class insert
                 break;
         endswitch;
     }
-    public function PDOBindParam(array &$paramArray): self
+    public function PDOBindParam(array &$paramArray)
     {
         $tmp = [];
         foreach ($this->items as $k => &$v) :
@@ -45,8 +45,9 @@ class insert
         $paramArray = $tmp;
         return $this;
     }
-    function __toString(): string
+    function __toString()
     {
+        try{
         if (count($this->items) == 0) throw new \RuntimeException("Insert value not set");
         switch ($this->GetParent()->GetParent()->GetBuilderType()):
             case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
@@ -85,10 +86,13 @@ class insert
                 }
                 return sprintf("INSERT INTO \"%s\" (%s) VALUES (%s)", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
                 break;
-            default:
+            default: 
                 throw new \RuntimeException("Insert unknown builder type");
                 break;
-        endswitch;
+        endswitch;}
+     catch (\Exception $th) {
+        return $th->getMessage();
+    }
     }
     function __debugInfo()
     {

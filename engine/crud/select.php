@@ -98,7 +98,7 @@ class select
                 break;
         endswitch;
     }
-    public function PDOBindParam(array &$paramArray): self
+    public function PDOBindParam(array &$paramArray)
     {
         $tmp = [];
         foreach ($this->where as $k => &$v) :
@@ -107,8 +107,9 @@ class select
         $paramArray = $tmp;
         return $this;
     }
-    public function __toString(): string
+    public function __toString()
     {
+        try{
         $afield = [];
         $agroupby = [];
         $aorderby = [];
@@ -203,7 +204,9 @@ class select
             default:
                 throw new \RuntimeException("Select unknown builder type");
                 break;
-        endswitch;
+        endswitch;} catch (\Exception $th) {
+            return $th->getMessage();
+        }
     }
     function __debugInfo()
     {
@@ -216,12 +219,20 @@ class select
         }
     }
 }
+
+/**
+ * 
+ * @property string $field
+ * @property null|string $alias
+ * @property bool $group
+ * @property null|string $sort
+ */
 class selectField
 {
-    public string $field;
-    public ?string $alias = null;
-    public bool $group = false;
-    public ?string $sort = null;
+    public  $field;
+    public  $alias = null;
+    public  $group = false;
+    public  $sort = null;
 }
 
 class SelectParametersSendInvalidException extends \Exception

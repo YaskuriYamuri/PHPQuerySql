@@ -18,7 +18,7 @@ class table
         $this->items = [];
         $this->newTableName = "";
     }
-    function __call(string $name, array $arguments)
+    function __call( $name, array $arguments)
     {
         switch ($name):
             case "Create":
