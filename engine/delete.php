@@ -1,71 +1,122 @@
 <?php
 
 namespace PhpQuerySql\engine;
+
 require_once "builder.php";
-class delete{ 
-    public function __construct(builder $parent) {
-        $this->parent= $parent;
-        $this->LogicAnd();
-    } 
-    public function GetParent(): builder
+/**
+ * Kelas delete
+ * @method builder GetParent()
+ * @method self AddWhere(string $field, mixed $value)
+ * @method self LogicAnd()
+ * @method self LogicOr() 
+ */
+class delete
+{
+    public function __construct(builder $parent)
     {
-        return $this->parent;
+        $this->prefixWhere = "where";
+        $this->parent = $parent;
+        $this->where = [];
+        $this->LogicAnd();
     }
-    public function AddWhere(string $field,$value):self{
-        $this->where[] = [$field,$value];
-        return $this;
-    } 
-    public function LogicOr():self{
-        $this->logic = " OR ";
-        return $this;
-    }
-    public function LogicAnd():self{
-        $this->logic = " AND ";
-        return $this;
+    function __call($name, $arguments)
+    {
+        switch ($name):
+            case "GetParent":
+                if (count($arguments) == 0) : return $this->parent;
+                else : throw new DeleteParametersSendInvalidException;
+                endif;
+                break;
+            case "AddWhere":
+                if (count($arguments) == 2) :
+                    $this->where[] = &$arguments;
+                    return $this;
+                else :
+                    throw new DeleteParametersSendInvalidException;
+                endif;
+                break;
+            case "LogicOr":
+                $this->logic = " OR ";
+                return $this;
+                break;
+            case "LogicAnd":
+                $this->logic = " AND ";
+                return $this;
+                break;
+            default:
+                throw new DeleteMethodUnknownException;
+                break;
+        endswitch;
     }
     public function PDOBindParam(array &$paramArray): self
     {
-        $tmp = []; 
+        $tmp = [];
         foreach ($this->where as $k => &$v) :
-            $tmp[":where$v[0]$k"] = $v[1];
+            $tmp[":{$this->prefixWhere}{$v[0]}{$k}"] = $v[1];
         endforeach;
         $paramArray = $tmp;
         return $this;
     }
-    public function __toString():string
+    public function __toString(): string
     {
+        if (count($this->where) == 0) throw new \RuntimeException("Update value where not set");
         switch ($this->parent->GetParent()->GetBuilderType()):
             case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
-                $prmW = []; 
+                $prmW = [];
                 foreach ($this->where as $key => $val) {
-                    $prmW[] = "`$val[0]`=:where" .$val[0]. $key;
+                    $prmW[] = "`{$val[0]}`=:{$this->prefixWhere}" . $val[0] . $key;
                 }
                 return sprintf("DELETE FROM `%s` WHERE %s", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
                 break;
             case \PhpQuerySql\PHPQUERYSQL_TYPE_MSSQL:
-                $prmW = []; 
+                $prmW = [];
                 foreach ($this->where as $key => $val) {
-                    $prmW[] = "[$val[0]]=:where" .$val[0]. $key;
+                    $prmW[] = "[{$val[0]}]=:{$this->prefixWhere}" . $val[0] . $key;
                 }
-                return sprintf("DELETE FROM [%s] WHERE %s", $this->GetParent()->GetTables(),implode($this->logic, $prmW));
+                return sprintf("DELETE FROM [%s] WHERE %s", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
                 break;
             case \PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql:
-                $prmW = []; 
+                $prmW = [];
                 foreach ($this->where as $key => $val) {
-                    $prmW[] = "\"$val[0]\"=:where" .$val[0]. $key;
+                    $prmW[] = "\"{$val[0]}\"=:{$this->prefixWhere}" . $val[0] . $key;
                 }
                 return sprintf("DELETE FROM \"%s\" WHERE %s", $this->GetParent()->GetTables(),  implode($this->logic, $prmW));
                 break;
             case \PhpQuerySql\PHPQUERYSQL_TYPE_ORACLE:
-                $prmW = []; 
+                $prmW = [];
                 foreach ($this->where as $key => $val) {
-                    $prmW[] = "\"$val[0]\"=:where" .$val[0]. $key;
+                    $prmW[] = "\"{$val[0]}\"=:{$this->prefixWhere}" . $val[0] . $key;
                 }
-                return sprintf("DELETE FROM \"%s\" WHERE %s", $this->GetParent()->GetTables(),implode($this->logic, $prmW));
+                return sprintf("DELETE FROM \"%s\" WHERE %s", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
                 break;
             default:
-                throw new \RuntimeException("Insert unknown builder type");
+                throw new \RuntimeException("Delete unknown builder type");
                 break;
         endswitch;
+    }
+    function __debugInfo()
+    {
+        try {
+            $param =[];
+             $this->PDOBindParam($param );
+            return ["Query" => (string)$this,"Param"=>$param, "Builder Type" => $this->parent->GetParent()->GetBuilderType()];
+        } catch (\Exception $ex) {
+            return ["Error" => $ex];
+        }
+    }
+}
+
+class DeleteParametersSendInvalidException extends \Exception
+{
+    function __construct()
+    {
+        parent::__construct("Delete Parameter send invalid");
+    }
+}
+class DeleteMethodUnknownException extends \Exception
+{
+    function __construct()
+    {
+        parent::__construct("Delete call method unknown");
     }
 }

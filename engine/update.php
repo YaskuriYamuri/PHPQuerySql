@@ -3,61 +3,90 @@
 namespace PhpQuerySql\engine;
 
 require_once "builder.php";
+/**
+ * Kelas update
+ * 
+ * @method self SetValue(string $field, mixed $value)
+ * @method self AddWhere(string $field, mixed $value)
+ * @method builder GetParent()
+ * @method self LogicOr()
+ * @method self LogicAnd()
+ */
 class update
 {
     public function __construct(builder &$parent)
     {
+        $this->items = [];
+        $this->where = [];
         $this->parent = $parent;
+        $this->prefixSet = "set";
+        $this->prefixWhere = "where";
         $this->LogicAnd();
     }
-    public function GetParent(): builder
+
+    function __call(string $name, array $params)
     {
-        return $this->parent;
-    }
-    public function SetValue(string $field, $value): self
-    {
-        $this->items[$field] = $value;
-        return $this;
-    }
-    public function AddWhere(string $field, $value): self
-    {
-        $this->where[] = [$field,$value];
-        return $this;
-    }
-    public function LogicOr(): self
-    {
-        $this->logic = " OR ";
-        return $this;
-    }
-    public function LogicAnd(): self
-    {
-        $this->logic = " AND ";
-        return $this;
+        switch ($name):
+            case "SetValue":
+                if (count($params) == 2) :
+                    $this->items[(string)$params[0]] = &$params[1];
+                    return $this;
+                else :
+                    throw new UpdateParametersSendInvalidException;
+                endif;
+                break;
+            case "AddWhere":
+                if (count($params) == 2) :
+                    $this->where[] = &$params;
+                    return $this;
+                else :
+                    throw new UpdateParametersSendInvalidException;
+                endif;
+                break;
+            case "GetParent";
+                if (count($params) <> 0) throw new UpdateParametersSendInvalidException;
+                return $this->parent;
+                break;
+            case "LogicOr":
+                $this->logic = " OR ";
+                return $this;
+                break;
+            case "LogicAnd":
+                $this->logic = " AND ";
+                return $this;
+                break;
+            default:
+                throw new UpdateMethodUnknownException;
+                break;
+        endswitch;
     }
     public function PDOBindParam(array &$paramArray): self
     {
         $tmp = [];
         foreach ($this->items as $k => &$v) :
-            $tmp[":set$k"] = $v;
+            $tmp[":{$this->prefixSet}{$k}"] = $v;
         endforeach;
         foreach ($this->where as $k => &$v) :
-            $tmp[":where$v[0]$k"] = $v[1];
+            $tmp[":{$this->prefixWhere}{$v[0]}{$k}"] = $v[1];
         endforeach;
         $paramArray = $tmp;
         return $this;
     }
     public function __toString(): string
     {
+
+        if (count($this->items) == 0) throw new \RuntimeException("Update value set not set");
+        if (count($this->where) == 0) throw new \RuntimeException("Update value where not set");
         # UPDATE tb SET field=:setvalue where field=:wherevalue
         switch ($this->parent->GetParent()->GetBuilderType()):
             case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
                 $prmF = [];
                 $prmW = [];
                 foreach ($this->items as $key  => $val) {
-                    $prmF[] = "`$key`= :set$key"; 
+                    $prmF[] = "`$key`= :{$this->prefixSet}$key";
                 }
                 foreach ($this->where as $key => $val) {
-                    $prmW[] = "`$val[0]`=:where" .$val[0]. $key;
+                    $prmW[] = "`$val[0]`=:{$this->prefixWhere}" . $val[0] . $key;
                 }
                 return sprintf("UPDATE `%s` SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                 break;
@@ -65,10 +94,10 @@ class update
                 $prmF = [];
                 $prmW = [];
                 foreach ($this->items as $key => $val) {
-                    $prmF[] = "[$key]= :set$key"; 
+                    $prmF[] = "[$key]= :{$this->prefixSet}$key";
                 }
                 foreach ($this->where as $key => $val) {
-                    $prmW[] = "[$val[0]]=:where" .$val[0]. $key;
+                    $prmW[] = "[$val[0]]=:{$this->prefixWhere}" . $val[0] . $key;
                 }
                 return sprintf("UPDATE [%s] SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                 break;
@@ -76,10 +105,10 @@ class update
                 $prmF = [];
                 $prmW = [];
                 foreach ($this->items as $key => $val) {
-                    $prmF[] = "\"$key\"= :set$key"; 
+                    $prmF[] = "\"$key\"= :{$this->prefixSet}$key";
                 }
                 foreach ($this->where as $key => $val) {
-                    $prmW[] = "\"$val[0]\"=:where" .$val[0]. $key;
+                    $prmW[] = "\"$val[0]\"=:{$this->prefixWhere}" . $val[0] . $key;
                 }
                 return sprintf("UPDATE \"%s\" SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                 break;
@@ -87,16 +116,40 @@ class update
                 $prmF = [];
                 $prmW = [];
                 foreach ($this->items as $key => $val) {
-                    $prmF[] = "\"$key\"= :set$key"; 
+                    $prmF[] = "\"$key\"= :{$this->prefixSet}$key";
                 }
                 foreach ($this->where as $key => $val) {
-                    $prmW[] = "\"$val[0]\"=:where" .$val[0]. $key;
+                    $prmW[] = "\"$val[0]\"=:{$this->prefixWhere}" . $val[0] . $key;
                 }
                 return sprintf("UPDATE \"%s\" SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                 break;
             default:
-                throw new \RuntimeException("Insert unknown builder type");
+                throw new \RuntimeException("Update unknown builder type");
                 break;
         endswitch;
+    }
+    function __debugInfo()
+    {
+        try {
+            $param = [];
+            $this->PDOBindParam($param);
+            return ["Query" => (string)$this, "Param" => $param, "Builder Type" => $this->parent->GetParent()->GetBuilderType()];
+        } catch (\Exception $ex) {
+            return ["Error" => $ex];
+        }
+    }
+}
+class UpdateParametersSendInvalidException extends \Exception
+{
+    function __construct()
+    {
+        parent::__construct("Update Parameter send invalid");
+    }
+}
+class UpdateMethodUnknownException extends \Exception
+{
+    function __construct()
+    {
+        parent::__construct("Update call method unknown");
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PhpQuerySql;
 
 use RuntimeException;
- 
+
 
 const PHPQUERYSQL_TYPE_MYSQL = "dc0c0b20c2005050ae9e1c7faae77047", PHPQUERYSQL_TYPE_MSSQL = "30b3d579b453c3ac42290a65a443f6ad", PHPQUERYSQL_TYPE_POSTGRESql = "082d8c28a47ce77490d67768cbf840de", PHPQUERYSQL_TYPE_ORACLE = "d350d135bbae43d8ce9a64230bc14d2d";
 /**
@@ -20,8 +20,7 @@ const PHPQUERYSQL_TYPE_MYSQL = "dc0c0b20c2005050ae9e1c7faae77047", PHPQUERYSQL_T
 abstract class PhpQuerySql
 {
 
-    // public $Builder;
-    // private $bt;
+    const TABLE_DATATYPE_VARCHAR=1,TABLE_DATATYPE_INT=2,TABLE_DATATYPE_DATE=3,TABLE_DATATYPE_TIME=4,TABLE_DATATYPE_DATETIME=5;
     /**
      * Contructor class
      *
@@ -50,9 +49,9 @@ abstract class PhpQuerySql
             case 'bt';
                 $this->$name = $value;
                 break;
-                case 'Builder';
-                    $this->$name = $value;
-                    break;
+            case 'Builder';
+                $this->$name = $value;
+                break;
             default:
                 throw new RuntimeException('Unknown variable');
         endswitch;
