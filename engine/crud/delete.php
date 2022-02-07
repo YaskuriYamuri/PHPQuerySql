@@ -1,18 +1,18 @@
 <?php
 
-namespace PhpQuerySql\engine;
+namespace PhpQuerySql\engine\crud;
 
-require_once "builder.php";
+require_once implode(DIRECTORY_SEPARATOR, [__DIR__, "..", "builder.php"]);
 /**
  * Kelas delete
- * @method builder GetParent()
+ * @method \PhpQuerySql\engine\builder GetParent()
  * @method self AddWhere(string $field, mixed $value)
  * @method self LogicAnd()
  * @method self LogicOr() 
  */
 class delete
 {
-    public function __construct(builder $parent)
+    public function __construct(\PhpQuerySql\engine\builder $parent)
     {
         $this->prefixWhere = "where";
         $this->parent = $parent;
@@ -60,7 +60,7 @@ class delete
     public function __toString(): string
     {
         if (count($this->where) == 0) throw new \RuntimeException("Update value where not set");
-        switch ($this->parent->GetParent()->GetBuilderType()):
+        switch ($this->GetParent()->GetParent()->GetBuilderType()):
             case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
                 $prmW = [];
                 foreach ($this->where as $key => $val) {
@@ -99,7 +99,7 @@ class delete
         try {
             $param =[];
              $this->PDOBindParam($param );
-            return ["Query" => (string)$this,"Param"=>$param, "Builder Type" => $this->parent->GetParent()->GetBuilderType()];
+            return ["Query" => (string)$this,"Param"=>$param, "Builder Type" => $this->GetParent()->GetParent()->GetBuilderType()];
         } catch (\Exception $ex) {
             return ["Error" => $ex];
         }

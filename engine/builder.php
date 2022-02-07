@@ -6,33 +6,37 @@ require_once "PhpQuerySql.php";
 /**
  * Kelas builder
  * 
- * @property table $Table
+ * @property generate\generate $Generate 
+ * @property crud\insert $Insert
+ * @property crud\delete $Delete
+ * @property crud\update $Update
+ * @property crud\select $Select
  * 
  * @method self SetTables(string $name)
  * @method string GetTables()
  * @method \PhpQuerySql\PhpQuerySql GetParent()
  */
 class builder
-{
-    public $Insert, $Update, $Delete, $Select;
+{ 
     private $tables, $parent;
     function __construct(\PhpQuerySql\PhpQuerySql &$parent)
     {
-        require_once "insert.php";
         $this->parent = $parent;
-        $this->Insert  = new insert($this);
 
-        require_once "delete.php";
-        $this->Delete  = new delete($this);
+        require_once implode(DIRECTORY_SEPARATOR,["crud","insert.php"]);
+        $this->Insert  = new crud\insert($this);
 
-        require_once "select.php";
-        $this->Select  = new select($this);
+        require_once implode(DIRECTORY_SEPARATOR,["crud","delete.php"]);
+        $this->Delete  = new crud\delete($this);
 
-        require_once "update.php";
-        $this->Update  = new update($this);
-        
-        require_once "table.php";
-        $this->Table  = new table($this);
+        require_once implode(DIRECTORY_SEPARATOR,["crud","select.php"]);
+        $this->Select  = new crud\select($this);
+
+        require_once implode(DIRECTORY_SEPARATOR,["crud","update.php"]);
+        $this->Update  = new crud\update($this);
+         
+        require_once implode(DIRECTORY_SEPARATOR,["generate","generate.php"]);
+        $this->Generate  = new generate\generate($this);
     }
     /**
      * call class dynamic
@@ -69,20 +73,11 @@ class builder
                 break;
             default:
         endswitch;
+    } 
+    function __debugInfo()
+    {
+        return (array)$this;
     }
-    // function SetTables(string $name): self
-    // {
-    //     $this->tables = $name;
-    //     return $this;
-    // }
-    // function GetTables(): string
-    // {
-    //     return $this->tables;
-    // }
-    // function GetParent(): \PhpQuerySql\PhpQuerySql
-    // {
-    //     return $this->parent;
-    // }
 }
 
 class ParameterSendNotValid extends \Exception

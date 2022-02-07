@@ -1,33 +1,31 @@
 <?php
 
-namespace PhpQuerySql\engine;
+namespace PhpQuerySql\engine\crud;
 
-require_once "builder.php";
+require_once implode(DIRECTORY_SEPARATOR, [__DIR__, "..", "builder.php"]);
 /**
  * Kelas insert
  * 
  * @method self SetValue(string $field, mixed $value)
- * @method builder GetParent()
+ * @method \PhpQuerySql\engine\builder GetParent()
  */
 class insert
 {
     private $items, $parent;
-    function __construct(builder &$parent)
+    function __construct(\PhpQuerySql\engine\builder &$parent)
     {
         $this->parent = $parent;
         $this->items = [];
-        $this->prmPrefix="prm_";
+        $this->prmPrefix = "prm_";
     }
     function __call(string $name, array $params)
     {
         switch ($name):
             case "SetValue":
-                if (count($params) == 2) :
-                    $this->items[$params[0]] = &$params[1];
-                    return $this;
-                else :
-                    throw new InsertParametersSendInvalidException;
+                if (count($params) == 2) : $this->items[$params[0]] = &$params[1];
+                else : throw new InsertParametersSendInvalidException;
                 endif;
+                return $this;
                 break;
             case "GetParent";
                 if (count($params) <> 0) throw new InsertParametersSendInvalidException;
@@ -42,21 +40,21 @@ class insert
     {
         $tmp = [];
         foreach ($this->items as $k => &$v) :
-            $tmp[":".$this->prmPrefix.$k] = $v;
+            $tmp[":" . $this->prmPrefix . $k] = $v;
         endforeach;
         $paramArray = $tmp;
         return $this;
     }
     function __toString(): string
     {
-        if(count($this->items)==0) throw new \RuntimeException("Insert value not set");
-        switch ($this->parent->GetParent()->GetBuilderType()):
+        if (count($this->items) == 0) throw new \RuntimeException("Insert value not set");
+        switch ($this->GetParent()->GetParent()->GetBuilderType()):
             case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
                 $prmF = [];
                 $prmV = [];
                 foreach ($this->items as $key => $val) {
                     $prmF[] = "`$key`";
-                    $prmV[] = ":".$this->prmPrefix . $key;
+                    $prmV[] = ":" . $this->prmPrefix . $key;
                 }
                 return sprintf("INSERT INTO `%s` (%s) VALUES (%s)", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
                 break;
@@ -65,7 +63,7 @@ class insert
                 $prmV = [];
                 foreach ($this->items as $key => $val) {
                     $prmF[] = "[$key]";
-                    $prmV[] = ":".$this->prmPrefix . $key;
+                    $prmV[] = ":" . $this->prmPrefix . $key;
                 }
                 return sprintf("INSERT INTO [%s] (%s) VALUES (%s)", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
                 break;
@@ -74,7 +72,7 @@ class insert
                 $prmV = [];
                 foreach ($this->items as $key => $val) {
                     $prmF[] = "\"$key\"";
-                    $prmV[] = ":".$this->prmPrefix . $key;
+                    $prmV[] = ":" . $this->prmPrefix . $key;
                 }
                 return sprintf("INSERT INTO \"%s\" (%s) VALUES (%s)", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
                 break;
@@ -83,7 +81,7 @@ class insert
                 $prmV = [];
                 foreach ($this->items as $key => $val) {
                     $prmF[] = "\"$key\"";
-                    $prmV[] = ":".$this->prmPrefix . $key;
+                    $prmV[] = ":" . $this->prmPrefix . $key;
                 }
                 return sprintf("INSERT INTO \"%s\" (%s) VALUES (%s)", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
                 break;
@@ -95,9 +93,9 @@ class insert
     function __debugInfo()
     {
         try {
-            $param =[];
-             $this->PDOBindParam($param );
-            return ["Query" => (string)$this,"Param"=>$param, "Builder Type" => $this->parent->GetParent()->GetBuilderType()];
+            $param = [];
+            $this->PDOBindParam($param);
+            return ["Query" => (string)$this, "Param" => $param, "Builder Type" => $this->GetParent()->GetParent()->GetBuilderType()];
         } catch (\Exception $ex) {
             return ["Error" => $ex];
         }

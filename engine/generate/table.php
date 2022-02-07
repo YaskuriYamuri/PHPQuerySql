@@ -1,18 +1,18 @@
 <?php
 
-namespace PhpQuerySql\engine;
+namespace PhpQuerySql\engine\generate;
 
-require_once("builder.php");
+require_once(implode(DIRECTORY_SEPARATOR,[__DIR__ ,"generate.php"]));
 /**
  * 
- * @method \PhpQuerySql\engine\builder GetParent()
+ * @method \PhpQuerySql\engine\generate\generate GetParent()
  * @method self Create(string $SetNewTableName) 
  * @method self AddField($name, $type,null|mixed $length,$default)
  * 
  */
 class table
-{
-    public function __construct(builder &$parent)
+{ 
+    public function __construct(\PhpQuerySql\engine\generate\generate &$parent)
     {
         $this->parent = $parent;
         $this->items = [];
@@ -34,7 +34,7 @@ class table
             case "GetParent":
                 if (count($arguments) <> 0) throw new UnknownTableMethodCallParamException;
                 return $this->parent;
-                break;
+                break; 
             default:
                 throw new UnknownTableMethodCallException($name);
                 break;
@@ -43,7 +43,8 @@ class table
     public function __toString()
     {
         // return  "Query generate Table ".$this->newTableName . var_export($this->items,true);
-        switch ($this->parent->GetParent()->GetBuilderType()):
+
+        switch ($this->GetParent()->GetParent()->GetParent()->GetBuilderType()):
             case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
                 $prm = [];
                 foreach ($this->items as $key => $val) {
@@ -89,7 +90,7 @@ class table
     function __debugInfo()
     {
         try {
-            return ["Query" => (string)$this, "Builder Type" => $this->parent->GetParent()->GetBuilderType()];
+            return ["Query" => (string)$this, "Builder Type" => $this->GetParent()->GetParent()->GetParent()->GetBuilderType()];
         } catch (\Exception $ex) {
             return ["Error" => $ex];
         }

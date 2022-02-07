@@ -1,20 +1,20 @@
 <?php
 
-namespace PhpQuerySql\engine;
+namespace PhpQuerySql\engine\crud;
 
-require_once "builder.php";
+require_once implode(DIRECTORY_SEPARATOR, [__DIR__, "..", "builder.php"]);
 /**
  * Kelas update
  * 
  * @method self SetValue(string $field, mixed $value)
  * @method self AddWhere(string $field, mixed $value)
- * @method builder GetParent()
+ * @method \PhpQuerySql\engine\builder GetParent()
  * @method self LogicOr()
  * @method self LogicAnd()
  */
 class update
 {
-    public function __construct(builder &$parent)
+    public function __construct(\PhpQuerySql\engine\builder &$parent)
     {
         $this->items = [];
         $this->where = [];
@@ -78,7 +78,7 @@ class update
         if (count($this->items) == 0) throw new \RuntimeException("Update value set not set");
         if (count($this->where) == 0) throw new \RuntimeException("Update value where not set");
         # UPDATE tb SET field=:setvalue where field=:wherevalue
-        switch ($this->parent->GetParent()->GetBuilderType()):
+        switch ($this->GetParent()->GetParent()->GetBuilderType()):
             case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
                 $prmF = [];
                 $prmW = [];
@@ -133,7 +133,7 @@ class update
         try {
             $param = [];
             $this->PDOBindParam($param);
-            return ["Query" => (string)$this, "Param" => $param, "Builder Type" => $this->parent->GetParent()->GetBuilderType()];
+            return ["Query" => (string)$this, "Param" => $param, "Builder Type" => $this->GetParent()->GetParent()->GetBuilderType()];
         } catch (\Exception $ex) {
             return ["Error" => $ex];
         }

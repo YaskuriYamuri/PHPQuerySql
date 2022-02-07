@@ -1,16 +1,16 @@
 <?php
 
-namespace PhpQuerySql\engine;
+namespace PhpQuerySql\engine\crud;
 
-require_once "builder.php";
+require_once implode(DIRECTORY_SEPARATOR, [__DIR__, "..", "builder.php"]);
 /**
  * Kelas select
  * 
- * @method builder GetParent()
+ * @method \PhpQuerySql\engine\builder GetParent()
  * @method self SetField(string $field)
  * @method self SetField(string $field, ?string $alias = null)
  * @method self SetField(string $field, ?string $alias = null, bool $group = false)
- * @method self SetField(string $field, ?string $alias = null, bool $group = false, null|select::SELECT_ORDER_ASCENDING|select::SELECT_ORDER_DESCENDING $sort = null)
+ * @method self SetField(string $field, ?string $alias = null, bool $group = false, null|\PhpQuerySql\PhpQuerySql::ORDERBY_ASCENDING|\PhpQuerySql\PhpQuerySql::ORDERBY_DESCENDING $sort = null)
  * @method self AddWhere(string $field, mixed $value)
  * @method self LogicAnd()
  * @method self LogicOr() 
@@ -18,9 +18,8 @@ require_once "builder.php";
  * @method self SetIndexCount(?int $value)
  */
 class select
-{
-    const SELECT_ORDER_ASCENDING = "ASC", SELECT_ORDER_DESCENDING = "DESC";
-    public function __construct(builder $parent)
+{ 
+    public function __construct(\PhpQuerySql\engine\builder $parent)
     {
         $this->parent = $parent;
         $this->field = [];
@@ -79,8 +78,7 @@ class select
                 endif;
                 return $this;
                 break;
-            case "SetIndexCount":
-                // die(var_dump($arguments[0]));
+            case "SetIndexCount": 
                 if (count($arguments) == 1) :
                     if (is_null($arguments[0])) :
                         $this->IndexCount = $arguments[0];
@@ -115,7 +113,7 @@ class select
         $agroupby = [];
         $aorderby = [];
         $awhere = [];
-        switch ($this->parent->GetParent()->GetBuilderType()):
+        switch ($this->GetParent()->GetParent()->GetBuilderType()):
             case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
                 # SELECT * FROM tb as a WHERE tb.field=:wherefield GROUP BY gb1 ORDER BY ob1 LIMIT 0 
                 if (count($this->field) > 0) :
@@ -212,7 +210,7 @@ class select
         try {
             $param =[];
              $this->PDOBindParam($param );
-            return ["Query" => (string)$this,"Param"=>$param, "Builder Type" => $this->parent->GetParent()->GetBuilderType()];
+            return ["Query" => (string)$this,"Param"=>$param, "Builder Type" => $this->GetParent()->GetParent()->GetBuilderType()];
         } catch (\Exception $ex) {
             return ["Error" => $ex];
         }
