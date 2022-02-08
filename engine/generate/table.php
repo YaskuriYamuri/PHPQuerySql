@@ -7,7 +7,7 @@ require_once(implode(DIRECTORY_SEPARATOR, [__DIR__, "generate.php"]));
  * 
  * @method \PhpQuerySql\engine\generate\generate GetParent()
  * @method self Create(string $SetNewTableName)   
- * @method self AddField($name, $type,null|mixed $length,bool $nullable = true,mixed $default =table::DEFAULT_NO_DEFAULT)
+ * @method self AddField(string $name, $type,null|mixed $length,bool $nullable = true,mixed $default =table::DEFAULT_NO_DEFAULT)
  * @method self SetPrimary(string $field);
  * @method self SetComment(string $KomentarTabel);
  * 
@@ -27,21 +27,21 @@ class table
     {
         switch ($name):
             case "Create":
-                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name,$arguments);
+                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name, $arguments);
                 $this->newTableName = $arguments[0];
                 return $this;
                 break;
             case "SetPrimary":
-                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name,$arguments);
+                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name, $arguments);
                 $this->setPrimary = $arguments[0];
                 return $this;
                 break;
             case "SetComment":
-                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name,$arguments);
+                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name, $arguments);
                 $this->setComment = $arguments[0];
                 return $this;
                 break;
-            case "AddField": 
+            case "AddField":
                 switch (count($arguments)):
                     case 3:
                         $arguments[3] = true;
@@ -56,13 +56,13 @@ class table
                         $this->items[$arguments[0]] = $arguments;
                         break;
                     default:
-                        throw new UnknownTableMethodCallParamException($name,$arguments);
+                        throw new UnknownTableMethodCallParamException($name, $arguments);
                         break;
                 endswitch;
                 return $this;
                 break;
             case "GetParent":
-                if (count($arguments) <> 0) throw new UnknownTableMethodCallParamException($name,$arguments);
+                if (count($arguments) <> 0) throw new UnknownTableMethodCallParamException($name, $arguments);
                 return $this->parent;
                 break;
             default:
@@ -101,9 +101,22 @@ class table
                 break;
             case \PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql:
                 $prm = [];
+                $castType  = function ($type) {
+                    switch (strtolower($type)):
+                        case 'datetime':
+                            return 'timestamp';
+                            break;
+                        case 'integer':
+                            return 'int';
+                            break;
+                        default:
+                            return $type;
+                            break;
+                    endswitch;
+                };
                 foreach ($this->items as $key => $val) {
                     if (in_array($val[1], ["varchar", "char", "int"], false) && is_null($val[2])) throw new \Exception("Need length type of {$val[1]}");
-                    $prm[] = " \"{$val[0]}\" {$val[1]}" .
+                    $prm[] = " \"{$val[0]}\" ".$castType($val[1]) .
                         (is_null($val[2])  ? "" : (in_array(strtolower($val[1]), ['int', 'integer']) ? "" : "({$val[2]})")) .
                         ($val[3] == true ? " NULL " : " NOT NULL ") .
                         ($val[4] != self::DEFAULT_NO_DEFAULT ? (is_null($val[4]) ? "DEFAULT null " : (empty($val[4]) ? "DEFAULT ''" : "DEFAULT " . $val[4])) : "");
@@ -144,8 +157,8 @@ class UnknownTableMethodCallException extends \Exception
 }
 class UnknownTableMethodCallParamException extends \Exception
 {
-    public function __construct($name,$param)
+    public function __construct($name, $param)
     {
-        parent::__construct("Unknown table method call Param : {$name} => ".var_export($param,true));
+        parent::__construct("Unknown table method call Param : {$name} => " . var_export($param, true));
     }
 }
