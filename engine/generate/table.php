@@ -45,6 +45,7 @@ class table
                 switch (count($arguments)):
                     case 3:
                         $arguments[3] = true;
+                        $arguments[4] = self::DEFAULT_NO_DEFAULT;
                         $this->items[$arguments[0]] = $arguments;
                         break;
                     case 4:
