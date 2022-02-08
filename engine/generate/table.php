@@ -27,17 +27,17 @@ class table
     {
         switch ($name):
             case "Create":
-                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException;
+                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name);
                 $this->newTableName = $arguments[0];
                 return $this;
                 break;
             case "SetPrimary":
-                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException;
+                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name);
                 $this->setPrimary = $arguments[0];
                 return $this;
                 break;
             case "SetComment":
-                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException;
+                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name);
                 $this->setComment = $arguments[0];
                 return $this;
                 break;
@@ -56,13 +56,13 @@ class table
                         $this->items[$arguments[0]] = $arguments;
                         break;
                     default:
-                        throw new UnknownTableMethodCallParamException;
+                        throw new UnknownTableMethodCallParamException($name);
                         break;
                 endswitch;
                 return $this;
                 break;
             case "GetParent":
-                if (count($arguments) <> 0) throw new UnknownTableMethodCallParamException;
+                if (count($arguments) <> 0) throw new UnknownTableMethodCallParamException($name);
                 return $this->parent;
                 break;
             default:
