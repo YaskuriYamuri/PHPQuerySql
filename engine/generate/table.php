@@ -41,7 +41,7 @@ class table
                 $this->setComment = $arguments[0];
                 return $this;
                 break;
-            case "AddField":
+            case "AddField": 
                 switch (count($arguments)):
                     case 3:
                         $arguments[3] = true;
@@ -144,8 +144,8 @@ class UnknownTableMethodCallException extends \Exception
 }
 class UnknownTableMethodCallParamException extends \Exception
 {
-    public function __construct()
+    public function __construct($name)
     {
-        parent::__construct("Unknown table method call param set");
+        parent::__construct("Unknown table method call {$name}");
     }
 }
