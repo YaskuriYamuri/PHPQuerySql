@@ -27,17 +27,17 @@ class table
     {
         switch ($name):
             case "Create":
-                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name);
+                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name,$arguments);
                 $this->newTableName = $arguments[0];
                 return $this;
                 break;
             case "SetPrimary":
-                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name);
+                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name,$arguments);
                 $this->setPrimary = $arguments[0];
                 return $this;
                 break;
             case "SetComment":
-                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name);
+                if (count($arguments) <> 1) throw new UnknownTableMethodCallParamException($name,$arguments);
                 $this->setComment = $arguments[0];
                 return $this;
                 break;
@@ -56,13 +56,13 @@ class table
                         $this->items[$arguments[0]] = $arguments;
                         break;
                     default:
-                        throw new UnknownTableMethodCallParamException($name);
+                        throw new UnknownTableMethodCallParamException($name,$arguments);
                         break;
                 endswitch;
                 return $this;
                 break;
             case "GetParent":
-                if (count($arguments) <> 0) throw new UnknownTableMethodCallParamException($name);
+                if (count($arguments) <> 0) throw new UnknownTableMethodCallParamException($name,$arguments);
                 return $this->parent;
                 break;
             default:
@@ -144,8 +144,8 @@ class UnknownTableMethodCallException extends \Exception
 }
 class UnknownTableMethodCallParamException extends \Exception
 {
-    public function __construct($name)
+    public function __construct($name,$param)
     {
-        parent::__construct("Unknown table method call {$name}");
+        parent::__construct("Unknown table method call Param : {$name} => ".var_export($param,true));
     }
 }
