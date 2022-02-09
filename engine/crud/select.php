@@ -128,7 +128,7 @@ class select
                     $afield[] = "*";
                 endif;
                 foreach ($this->where as $key => $val) {
-                    $awhere[] = "`$val[0]`=:where" . $val[0] . $key;
+                    $awhere[] = "`$val[0]`=".$this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":where" . $val[0] . $key;
                 }
                 $sfield = implode(",", $afield);
                 $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
@@ -150,7 +150,7 @@ class select
                     $afield[] = "*";
                 endif;
                 foreach ($this->where as $key => $val) {
-                    $awhere[] = "[$val[0]]=:where" . $val[0] . $key;
+                    $awhere[] = "[$val[0]]=".$this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":where" . $val[0] . $key;
                 }
                 $sfield = implode(",", $afield);
                 $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
@@ -171,7 +171,7 @@ class select
                     $afield[] = "*";
                 endif;
                 foreach ($this->where as $key => $val) {
-                    $awhere[] = "\"$val[0]\"=:where" . $val[0] . $key;
+                    $awhere[] = "\"$val[0]\"=".$this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":where" . $val[0] . $key;
                 }
                 $sfield = implode(",", $afield);
                 $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
@@ -192,7 +192,7 @@ class select
                     $afield[] = "*";
                 endif;
                 foreach ($this->where as $key => $val) {
-                    $awhere[] = "\"$val[0]\"=:where" . $val[0] . $key;
+                    $awhere[] = "\"$val[0]\"=".$this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":where" . $val[0] . $key;
                 }
                 $sfield = implode(",", $afield);
                 $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
