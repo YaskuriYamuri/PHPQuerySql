@@ -52,7 +52,7 @@ class delete
     {
         $tmp = [];
         foreach ($this->where as $k => &$v) :
-            $tmp[":{$this->prefixWhere}{$v[0]}{$k}"] = $v[1];
+            if (!$this->GetParent()->isNonParam($v)) $tmp[":{$this->prefixWhere}{$v[0]}{$k}"] = $v[1];
         endforeach;
         $paramArray = $tmp;
         return $this;

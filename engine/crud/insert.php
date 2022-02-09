@@ -3,6 +3,7 @@
 namespace PhpQuerySql\engine\crud;
 
 require_once implode(DIRECTORY_SEPARATOR, [__DIR__, "..", "builder.php"]);
+use \PhpQuerySql\engine\builder as CBuilder;
 /**
  * Kelas insert
  * 
@@ -40,7 +41,7 @@ class insert
     {
         $tmp = [];
         foreach ($this->items as $k => &$v) :
-            if (!in_array($v, [$this->GetParent()::VALUE_CURRENT_DATE, $this->GetParent()::VALUE_CURRENT_DATETIME, $this->GetParent()::VALUE_CURRENT_TIME])) $tmp[":" . $this->prmPrefix . $k] = $v;
+            if (!$this->GetParent()->isNonParam($v)) $tmp[":" . $this->prmPrefix . $k] = $v;
         endforeach;
         $paramArray = $tmp;
         return $this;

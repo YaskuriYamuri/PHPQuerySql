@@ -13,7 +13,7 @@ require_once implode(DIRECTORY_SEPARATOR, [__DIR__, "..", "builder.php"]);
  * @method self LogicAnd()
  */
 class update
-{ 
+{
     public function __construct(\PhpQuerySql\engine\builder &$parent)
     {
         $this->items = [];
@@ -64,10 +64,10 @@ class update
     {
         $tmp = [];
         foreach ($this->items as $k => &$v) :
-            if (!in_array($v, [$this->GetParent()::VALUE_CURRENT_DATE, $this->GetParent()::VALUE_CURRENT_DATETIME, $this->GetParent()::VALUE_CURRENT_TIME]))    $tmp[":{$this->prefixSet}{$k}"] = $v;
+            if (!$this->GetParent()->isNonParam($v)) $tmp[":{$this->prefixSet}{$k}"] = $v;
         endforeach;
         foreach ($this->where as $k => &$v) :
-            if (!in_array($v, [$this->GetParent()::VALUE_CURRENT_DATE, $this->GetParent()::VALUE_CURRENT_DATETIME, $this->GetParent()::VALUE_CURRENT_TIME]))    $tmp[":{$this->prefixWhere}{$v[0]}{$k}"] = $v[1];
+            if (!$this->GetParent()->isNonParam($v)) $tmp[":{$this->prefixWhere}{$v[0]}{$k}"] = $v[1];
         endforeach;
         $paramArray = $tmp;
         return $this;
@@ -82,12 +82,12 @@ class update
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
                     $prmF = [];
                     $prmW = [];
-                    
+
                     foreach ($this->items as $key  => $val) {
-                        $prmF[] = "`$key`=" .($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixSet}$key");
+                        $prmF[] = "`$key`=" . ($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixSet}$key");
                     }
                     foreach ($this->where as $key => $val) {
-                        $prmW[] = "`$val[0]`=".($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
+                        $prmW[] = "`$val[0]`=" . ($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
                     return sprintf("UPDATE `%s` SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                     break;
@@ -95,10 +95,10 @@ class update
                     $prmF = [];
                     $prmW = [];
                     foreach ($this->items as $key => $val) {
-                        $prmF[] = "[$key]= ".($this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixSet}$key");
+                        $prmF[] = "[$key]= " . ($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixSet}$key");
                     }
                     foreach ($this->where as $key => $val) {
-                        $prmW[] = "[$val[0]]=".($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixWhere}" . $val[0] . $key);
+                        $prmW[] = "[$val[0]]=" . ($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
                     return sprintf("UPDATE [%s] SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                     break;
@@ -106,10 +106,10 @@ class update
                     $prmF = [];
                     $prmW = [];
                     foreach ($this->items as $key => $val) {
-                        $prmF[] = "\"$key\"= ".($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixSet}$key");
+                        $prmF[] = "\"$key\"= " . ($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixSet}$key");
                     }
                     foreach ($this->where as $key => $val) {
-                        $prmW[] = "\"$val[0]\"=".($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixWhere}" . $val[0] . $key);
+                        $prmW[] = "\"$val[0]\"=" . ($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
                     return sprintf("UPDATE \"%s\" SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                     break;
@@ -117,10 +117,10 @@ class update
                     $prmF = [];
                     $prmW = [];
                     foreach ($this->items as $key => $val) {
-                        $prmF[] = "\"$key\"= ".($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixSet}$key");
+                        $prmF[] = "\"$key\"= " . ($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixSet}$key");
                     }
                     foreach ($this->where as $key => $val) {
-                        $prmW[] = "\"$val[0]\"=".($this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixWhere}" . $val[0] . $key);
+                        $prmW[] = "\"$val[0]\"=" . ($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
                     return sprintf("UPDATE \"%s\" SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                     break;
