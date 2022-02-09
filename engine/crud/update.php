@@ -89,7 +89,7 @@ class update
                     foreach ($this->where as $key => $val) {
                         $prmW[] = "`$val[0]`=" . ($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
-                    return sprintf("UPDATE `%s` SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
+                    return sprintf("UPDATE `%s` SET %s WHERE %s;", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_MSSQL:
                     $prmF = [];
@@ -100,7 +100,7 @@ class update
                     foreach ($this->where as $key => $val) {
                         $prmW[] = "[$val[0]]=" . ($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
-                    return sprintf("UPDATE [%s] SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
+                    return sprintf("UPDATE [%s] SET %s WHERE %s;", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql:
                     $prmF = [];
@@ -111,7 +111,7 @@ class update
                     foreach ($this->where as $key => $val) {
                         $prmW[] = "\"$val[0]\"=" . ($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
-                    return sprintf("UPDATE \"%s\" SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
+                    return sprintf("UPDATE \"%s\" SET %s WHERE %s;", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_ORACLE:
                     $prmF = [];
@@ -122,7 +122,7 @@ class update
                     foreach ($this->where as $key => $val) {
                         $prmW[] = "\"$val[0]\"=" . ($this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
-                    return sprintf("UPDATE \"%s\" SET %s WHERE %s", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
+                    return sprintf("UPDATE \"%s\" SET %s WHERE %s;", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                     break;
                 default:
                     throw new \RuntimeException("Update unknown builder type");

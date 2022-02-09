@@ -58,7 +58,7 @@ class insert
                         $prmF[] = "`$key`";
                         $prmV[] =  $this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) : ":" . $this->prmPrefix . $key;
                     }
-                    return sprintf("INSERT INTO `%s` (%s) VALUES (%s)", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
+                    return sprintf("INSERT INTO `%s` (%s) VALUES (%s);", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_MSSQL:
                     $prmF = [];
@@ -67,7 +67,7 @@ class insert
                         $prmF[] = "[$key]";
                         $prmV[] = $this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) : ":" . $this->prmPrefix . $key;
                     }
-                    return sprintf("INSERT INTO [%s] (%s) VALUES (%s)", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
+                    return sprintf("INSERT INTO [%s] (%s) VALUES (%s);", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql:
                     $prmF = [];
@@ -76,7 +76,7 @@ class insert
                         $prmF[] = "\"$key\"";
                         $prmV[] = $this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":" . $this->prmPrefix . $key;
                     }
-                    return sprintf("INSERT INTO \"%s\" (%s) VALUES (%s)", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
+                    return sprintf("INSERT INTO \"%s\" (%s) VALUES (%s);", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_ORACLE:
                     $prmF = [];
@@ -85,7 +85,7 @@ class insert
                         $prmF[] = "\"$key\"";
                         $prmV[] = $this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":" . $this->prmPrefix . $key;
                     }
-                    return sprintf("INSERT INTO \"%s\" (%s) VALUES (%s)", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
+                    return sprintf("INSERT INTO \"%s\" (%s) VALUES (%s);", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
                     break;
                 default:
                     throw new \RuntimeException("Insert unknown builder type");

@@ -67,28 +67,28 @@ class delete
                 foreach ($this->where as $key => $val) {
                     $prmW[] = "`{$val[0]}`=".($this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixWhere}" . $val[0] . $key);
                 }
-                return sprintf("DELETE FROM `%s` WHERE %s", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
+                return sprintf("DELETE FROM `%s` WHERE %s;", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
                 break;
             case \PhpQuerySql\PHPQUERYSQL_TYPE_MSSQL:
                 $prmW = [];
                 foreach ($this->where as $key => $val) {
                     $prmW[] = "[{$val[0]}]=".($this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixWhere}" . $val[0] . $key);
                 }
-                return sprintf("DELETE FROM [%s] WHERE %s", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
+                return sprintf("DELETE FROM [%s] WHERE %s;", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
                 break;
             case \PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql:
                 $prmW = [];
                 foreach ($this->where as $key => $val) {
                     $prmW[] = "\"{$val[0]}\"=".($this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixWhere}" . $val[0] . $key);
                 }
-                return sprintf("DELETE FROM \"%s\" WHERE %s", $this->GetParent()->GetTables(),  implode($this->logic, $prmW));
+                return sprintf("DELETE FROM \"%s\" WHERE %s;", $this->GetParent()->GetTables(),  implode($this->logic, $prmW));
                 break;
             case \PhpQuerySql\PHPQUERYSQL_TYPE_ORACLE:
                 $prmW = [];
                 foreach ($this->where as $key => $val) {
                     $prmW[] = "\"{$val[0]}\"=".($this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixWhere}" . $val[0] . $key);
                 }
-                return sprintf("DELETE FROM \"%s\" WHERE %s", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
+                return sprintf("DELETE FROM \"%s\" WHERE %s;", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
                 break;
             default:
                 throw new \RuntimeException("Delete unknown builder type");

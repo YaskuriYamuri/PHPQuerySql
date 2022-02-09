@@ -135,7 +135,7 @@ class select
                 $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
                 $sorder = count($aorderby) > 0 ? "ORDER BY " . implode(",", $aorderby) : "";
                 $slimit = $this->IndexStart . (!is_null($this->IndexCount) ? "," . $this->IndexCount : "");
-                return sprintf("SELECT %s FROM `%s` %s %s %s LIMIT %s", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
+                return sprintf("SELECT %s FROM `%s` %s %s %s LIMIT %s;", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
                 break;
             case \PhpQuerySql\PHPQUERYSQL_TYPE_MSSQL:
                 # SELECT * FROM tb as a WHERE tb.field=:wherefield GROUP BY gb1 ORDER BY ob1 LIMIT 0 
@@ -157,7 +157,7 @@ class select
                 $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
                 $sorder = count($aorderby) > 0 ? "ORDER BY " . implode(",", $aorderby) : "";
                 $slimit = "OFFSET " . $this->IndexStart . " ROWS" . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : "");
-                return sprintf("SELECT %s FROM [%s] %s %s %s LIMIT %s", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
+                return sprintf("SELECT %s FROM [%s] %s %s %s LIMIT %s;", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
                 break;
             case \PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql:
                 if (count($this->field) > 0) :
@@ -178,7 +178,7 @@ class select
                 $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
                 $sorder = count($aorderby) > 0 ? "ORDER BY " . implode(",", $aorderby) : "";
                 $slimit = "OFFSET " . $this->IndexStart . " ROWS" . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : "");
-                return sprintf("SELECT %s FROM \"%s\" %s %s %s %s", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
+                return sprintf("SELECT %s FROM \"%s\" %s %s %s %s;", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
                 break;
             case \PhpQuerySql\PHPQUERYSQL_TYPE_ORACLE:
                 if (count($this->field) > 0) :
@@ -199,7 +199,7 @@ class select
                 $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
                 $sorder = count($aorderby) > 0 ? "ORDER BY " . implode(",", $aorderby) : "";
                 $slimit = "OFFSET " . $this->IndexStart . " ROWS" . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : "");
-                return sprintf("SELECT %s FROM \"%s\" %s %s %s %s", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
+                return sprintf("SELECT %s FROM \"%s\" %s %s %s %s;", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
                 break;
             default:
                 throw new \RuntimeException("Select unknown builder type");
