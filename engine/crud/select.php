@@ -102,7 +102,7 @@ class select
     {
         $tmp = [];
         foreach ($this->where as $k => &$v) :
-            if (!$this->GetParent()->isNonParam($v))  $tmp[":where$v[0]$k"] = $v[1];
+            if (!$this->GetParent()->isNonParam($v[1]))  $tmp[":where$v[0]$k"] = $v[1];
         endforeach;
         $paramArray = $tmp;
         return $this;
