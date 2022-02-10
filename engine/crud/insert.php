@@ -41,7 +41,8 @@ class insert
     {
         $tmp = [];
         foreach ($this->items as $k => &$v) :
-            if (!$this->GetParent()->isNonParam($v)) $tmp[":" . $this->prmPrefix . $k] = $v;
+            if (!$this->GetParent()->isNonParam($v)) 
+            $tmp[":" . $this->prmPrefix . $k] = $v;
         endforeach;
         $paramArray = $tmp;
         return $this;

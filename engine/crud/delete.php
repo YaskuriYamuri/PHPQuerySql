@@ -52,57 +52,59 @@ class delete
     {
         $tmp = [];
         foreach ($this->where as $k => &$v) :
-            if (!$this->GetParent()->isNonParam($v)) $tmp[":{$this->prefixWhere}{$v[0]}{$k}"] = $v[1];
+            if (!$this->GetParent()->isNonParam($v[1]))
+                $tmp[":".$this->prefixWhere.$v[0].$k] = $v[1];
         endforeach;
         $paramArray = $tmp;
         return $this;
     }
     public function __toString()
     {
-        try{
-        if (count($this->where) == 0) throw new \RuntimeException("Update value where not set");
-        switch ($this->GetParent()->GetParent()->GetBuilderType()):
-            case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
-                $prmW = [];
-                foreach ($this->where as $key => $val) {
-                    $prmW[] = "`{$val[0]}`=".($this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixWhere}" . $val[0] . $key);
-                }
-                return sprintf("DELETE FROM `%s` WHERE %s;", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
-                break;
-            case \PhpQuerySql\PHPQUERYSQL_TYPE_MSSQL:
-                $prmW = [];
-                foreach ($this->where as $key => $val) {
-                    $prmW[] = "[{$val[0]}]=".($this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixWhere}" . $val[0] . $key);
-                }
-                return sprintf("DELETE FROM [%s] WHERE %s;", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
-                break;
-            case \PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql:
-                $prmW = [];
-                foreach ($this->where as $key => $val) {
-                    $prmW[] = "\"{$val[0]}\"=".($this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixWhere}" . $val[0] . $key);
-                }
-                return sprintf("DELETE FROM \"%s\" WHERE %s;", $this->GetParent()->GetTables(),  implode($this->logic, $prmW));
-                break;
-            case \PhpQuerySql\PHPQUERYSQL_TYPE_ORACLE:
-                $prmW = [];
-                foreach ($this->where as $key => $val) {
-                    $prmW[] = "\"{$val[0]}\"=".($this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":{$this->prefixWhere}" . $val[0] . $key);
-                }
-                return sprintf("DELETE FROM \"%s\" WHERE %s;", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
-                break;
-            default:
-                throw new \RuntimeException("Delete unknown builder type");
-                break;
-        endswitch;} catch (\Exception $th) {
+        try {
+            if (count($this->where) == 0) throw new \RuntimeException("Update value where not set");
+            switch ($this->GetParent()->GetParent()->GetBuilderType()):
+                case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
+                    $prmW = [];
+                    foreach ($this->where as $key => $val) {
+                        $prmW[] = "`{$val[0]}`=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
+                    }
+                    return sprintf("DELETE FROM `%s` WHERE %s;", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
+                    break;
+                case \PhpQuerySql\PHPQUERYSQL_TYPE_MSSQL:
+                    $prmW = [];
+                    foreach ($this->where as $key => $val) {
+                        $prmW[] = "[{$val[0]}]=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
+                    }
+                    return sprintf("DELETE FROM [%s] WHERE %s;", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
+                    break;
+                case \PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql:
+                    $prmW = [];
+                    foreach ($this->where as $key => $val) {
+                        $prmW[] = "\"{$val[0]}\"=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
+                    }
+                    return sprintf("DELETE FROM \"%s\" WHERE %s;", $this->GetParent()->GetTables(),  implode($this->logic, $prmW));
+                    break;
+                case \PhpQuerySql\PHPQUERYSQL_TYPE_ORACLE:
+                    $prmW = [];
+                    foreach ($this->where as $key => $val) {
+                        $prmW[] = "\"{$val[0]}\"=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
+                    }
+                    return sprintf("DELETE FROM \"%s\" WHERE %s;", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
+                    break;
+                default:
+                    throw new \RuntimeException("Delete unknown builder type");
+                    break;
+            endswitch;
+        } catch (\Exception $th) {
             return $th->getMessage();
         }
     }
     function __debugInfo()
     {
         try {
-            $param =[];
-             $this->PDOBindParam($param );
-            return ["Query" => (string)$this,"Param"=>$param, "Builder Type" => $this->GetParent()->GetParent()->GetBuilderType()];
+            $param = [];
+            $this->PDOBindParam($param);
+            return ["Query" => (string)$this, "Param" => $param, "Builder Type" => $this->GetParent()->GetParent()->GetBuilderType()];
         } catch (\Exception $ex) {
             return ["Error" => $ex];
         }
