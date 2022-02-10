@@ -76,14 +76,15 @@ class builder
                     throw new ParameterSendNotValid();
                 endif;
                 break;
-                case "isNonParam":
-switch(count($arguments)):
-case 1:
-  return  in_array($arguments[0], [self::VALUE_CURRENT_DATE, self::VALUE_CURRENT_DATETIME,self::VALUE_CURRENT_TIME]) ;
-    default:
-    throw new ParameterSendNotValid();
-endswitch;
-                    break;
+            case "isNonParam":
+                switch (count($arguments)):
+                    case 1:
+                        return in_array($arguments[0], [self::VALUE_CURRENT_DATE, self::VALUE_CURRENT_DATETIME, self::VALUE_CURRENT_TIME],true);
+                        break;
+                    default:
+                        throw new ParameterSendNotValid();
+                endswitch;
+                break;
             case 'nonParam':
                 if (count($arguments) == 2) :
                     $value = $arguments[0];
@@ -144,7 +145,7 @@ endswitch;
                             switch ($value):
 
                                 default:
-                                    throw new \Exception("Please contact developer");
+                                    throw new \Exception("Error Builder Please contact developer");
                                     break;
                             endswitch;
                             break;
