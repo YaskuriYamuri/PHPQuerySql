@@ -43,6 +43,26 @@ class builder
         require_once implode(DIRECTORY_SEPARATOR, ["generate", "generate.php"]);
         $this->Generate  = new generate\generate($this);
     }
+    function __get($name)
+    {
+        switch ($name):
+            case "Insert";
+                return new crud\insert($this);
+                break;
+            case "Delete";
+                return new crud\delete($this);
+                break;
+            case "Select";
+                return new crud\select($this);
+                break;
+            case "Update";
+                return new crud\update($this);
+                break;
+            default:
+                return $this->$name;
+                break;
+        endswitch;
+    }
     /**
      * call class dynamic
      *
@@ -79,7 +99,7 @@ class builder
             case "isNonParam":
                 switch (count($arguments)):
                     case 1:
-                        return in_array($arguments[0], [self::VALUE_CURRENT_DATE, self::VALUE_CURRENT_DATETIME, self::VALUE_CURRENT_TIME],true);
+                        return in_array($arguments[0], [self::VALUE_CURRENT_DATE, self::VALUE_CURRENT_DATETIME, self::VALUE_CURRENT_TIME], true);
                         break;
                     default:
                         throw new ParameterSendNotValid();
