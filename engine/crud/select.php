@@ -22,9 +22,7 @@ class select
     public function __construct(\PhpQuerySql\engine\builder $parent)
     {
         $this->parent = $parent;
-        $this->field = [];
-        $this->where = [];
-        $this->LogicAnd()->SetIndexStart(null)->SetIndexCount(1);
+        $this->init();
     }
     function __call($name, $arguments)
     {
@@ -96,6 +94,11 @@ class select
                 endif;
                 return $this;
                 break;
+            case "init":
+                $this->field = [];
+                $this->where = [];
+                $this->LogicAnd()->SetIndexStart(null)->SetIndexCount(1);
+                break;
             default:
                 throw new SelectMethodUnknownException;
                 break;
@@ -159,7 +162,7 @@ class select
                     $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
                     $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
                     $sorder = count($aorderby) > 0 ? "ORDER BY " . implode(",", $aorderby) : "";
-                    $slimit =is_null($this->IndexStart) ? "" :( " OFFSET " . $this->IndexStart . " ROWS " . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : ""));
+                    $slimit = is_null($this->IndexStart) ? "" : (" OFFSET " . $this->IndexStart . " ROWS " . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : ""));
                     return sprintf("SELECT %s FROM [%s] %s %s %s %s;", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql:
@@ -180,7 +183,7 @@ class select
                     $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
                     $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
                     $sorder = count($aorderby) > 0 ? "ORDER BY " . implode(",", $aorderby) : "";
-                    $slimit =is_null($this->IndexStart) ? "" :( " OFFSET " . $this->IndexStart . " ROWS " . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : ""));
+                    $slimit = is_null($this->IndexStart) ? "" : (" OFFSET " . $this->IndexStart . " ROWS " . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : ""));
                     return sprintf("SELECT %s FROM \"%s\" %s %s %s %s;", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_ORACLE:
@@ -201,7 +204,7 @@ class select
                     $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
                     $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
                     $sorder = count($aorderby) > 0 ? "ORDER BY " . implode(",", $aorderby) : "";
-                    $slimit =is_null($this->IndexStart) ? "" :( " OFFSET " . $this->IndexStart . " ROWS " . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : ""));
+                    $slimit = is_null($this->IndexStart) ? "" : (" OFFSET " . $this->IndexStart . " ROWS " . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : ""));
                     return sprintf("SELECT %s FROM \"%s\" %s %s %s %s;", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
                     break;
                 default:

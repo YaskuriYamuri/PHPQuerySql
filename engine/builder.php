@@ -17,6 +17,7 @@ require_once "PhpQuerySql.php";
  * @method \PhpQuerySql\PhpQuerySql GetParent()
  * @method string nonParam(string $value,\PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL|\PhpQuerySql\PHPQUERYSQL_TYPE_MSSQL|\PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql|\PhpQuerySql\PHPQUERYSQL $builderType)
  * @method bool isNonParam($value)
+ * @method self Reset()
  */
 class builder
 {
@@ -42,26 +43,6 @@ class builder
 
         require_once implode(DIRECTORY_SEPARATOR, ["generate", "generate.php"]);
         $this->Generate  = new generate\generate($this);
-    }
-    function __get($name)
-    {
-        switch ($name):
-            case "Insert";
-                return new crud\insert($this);
-                break;
-            case "Delete";
-                return new crud\delete($this);
-                break;
-            case "Select";
-                return new crud\select($this);
-                break;
-            case "Update";
-                return new crud\update($this);
-                break;
-            default:
-                return $this->$name;
-                break;
-        endswitch;
     }
     /**
      * call class dynamic
@@ -177,6 +158,13 @@ class builder
                 else :
                     throw new ParameterSendNotValid();
                 endif;
+                break;
+            case "Reset":
+                $this->Select->init();
+                $this->Insert->init();
+                $this->Update->init();
+                $this->Delete->init();
+                return $this;
                 break;
             default:
         endswitch;

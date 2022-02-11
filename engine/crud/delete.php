@@ -14,10 +14,8 @@ class delete
 {
     public function __construct(\PhpQuerySql\engine\builder $parent)
     {
-        $this->prefixWhere = "where";
         $this->parent = $parent;
-        $this->where = [];
-        $this->LogicAnd();
+        $this->init();
     }
     function __call($name, $arguments)
     {
@@ -43,6 +41,11 @@ class delete
                 $this->logic = " AND ";
                 return $this;
                 break;
+                case "init":
+                    $this->prefixWhere = "where";
+                    $this->where = [];
+                    $this->LogicAnd();
+                    break;
             default:
                 throw new DeleteMethodUnknownException;
                 break;

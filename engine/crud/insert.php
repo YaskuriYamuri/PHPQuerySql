@@ -16,8 +16,7 @@ class insert
     function __construct(\PhpQuerySql\engine\builder &$parent)
     {
         $this->parent = $parent;
-        $this->items = [];
-        $this->prmPrefix = "prm_";
+        $this->init();
     }
     function __call($name, array $params)
     {
@@ -32,6 +31,10 @@ class insert
                 if (count($params) <> 0) throw new InsertParametersSendInvalidException;
                 return $this->parent;
                 break;
+                case "init":
+                    $this->items = [];
+                    $this->prmPrefix = "prm_";
+                    break;
             default:
                 throw new InsertMethodUnknownException;
                 break;

@@ -16,12 +16,8 @@ class update
 {
     public function __construct(\PhpQuerySql\engine\builder &$parent)
     {
-        $this->items = [];
-        $this->where = [];
         $this->parent = $parent;
-        $this->prefixSet = "set";
-        $this->prefixWhere = "where";
-        $this->LogicAnd();
+        $this->init();
     }
 
     function __call($name, array $params)
@@ -55,6 +51,13 @@ class update
                 $this->logic = " AND ";
                 return $this;
                 break;
+case "init":
+    $this->items = [];
+    $this->where = [];
+    $this->prefixSet = "set";
+    $this->prefixWhere = "where";
+    $this->LogicAnd();
+    break;
             default:
                 throw new UpdateMethodUnknownException;
                 break;
