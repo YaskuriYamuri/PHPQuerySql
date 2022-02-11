@@ -24,7 +24,7 @@ class select
         $this->parent = $parent;
         $this->field = [];
         $this->where = [];
-        $this->LogicAnd()->SetIndexStart(0)->SetIndexCount(1);
+        $this->LogicAnd()->SetIndexStart(null)->SetIndexCount(1);
     }
     function __call($name, $arguments)
     {
