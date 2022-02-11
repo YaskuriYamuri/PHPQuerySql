@@ -137,7 +137,7 @@ class select
                     $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
                     $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
                     $sorder = count($aorderby) > 0 ? "ORDER BY " . implode(",", $aorderby) : "";
-                    $slimit = is_null($this->IndexStart) ? "" : (" LIMIT" . $this->IndexStart . (!is_null($this->IndexCount) ? "," . $this->IndexCount : ""));
+                    $slimit = is_null($this->IndexStart) ? "" : (" LIMIT " . $this->IndexStart . (!is_null($this->IndexCount) ? " , " . $this->IndexCount : ""));
                     return sprintf("SELECT %s FROM `%s` %s %s %s %s;", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_MSSQL:
@@ -159,7 +159,7 @@ class select
                     $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
                     $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
                     $sorder = count($aorderby) > 0 ? "ORDER BY " . implode(",", $aorderby) : "";
-                    $slimit =is_null($this->IndexStart) ? "" :( "OFFSET " . $this->IndexStart . " ROWS" . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : ""));
+                    $slimit =is_null($this->IndexStart) ? "" :( " OFFSET " . $this->IndexStart . " ROWS " . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : ""));
                     return sprintf("SELECT %s FROM [%s] %s %s %s %s;", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql:
@@ -180,7 +180,7 @@ class select
                     $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
                     $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
                     $sorder = count($aorderby) > 0 ? "ORDER BY " . implode(",", $aorderby) : "";
-                    $slimit =is_null($this->IndexStart) ? "" :( "OFFSET " . $this->IndexStart . " ROWS" . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : ""));
+                    $slimit =is_null($this->IndexStart) ? "" :( " OFFSET " . $this->IndexStart . " ROWS " . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : ""));
                     return sprintf("SELECT %s FROM \"%s\" %s %s %s %s;", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_ORACLE:
@@ -201,7 +201,7 @@ class select
                     $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
                     $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
                     $sorder = count($aorderby) > 0 ? "ORDER BY " . implode(",", $aorderby) : "";
-                    $slimit =is_null($this->IndexStart) ? "" :( "OFFSET " . $this->IndexStart . " ROWS" . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : ""));
+                    $slimit =is_null($this->IndexStart) ? "" :( " OFFSET " . $this->IndexStart . " ROWS " . (!is_null($this->IndexCount) ? " FETCH NEXT " . $this->IndexCount . " ROWS ONLY "  : ""));
                     return sprintf("SELECT %s FROM \"%s\" %s %s %s %s;", $sfield, $this->GetParent()->GetTables(), $swhere, $sgroup, $sorder, $slimit);
                     break;
                 default:
