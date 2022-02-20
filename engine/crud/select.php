@@ -12,6 +12,7 @@ require_once implode(DIRECTORY_SEPARATOR, [__DIR__, "..", "builder.php"]);
  * @method self SetField(string $field, ?string $alias = null, bool $group = false)
  * @method self SetField(string $field, ?string $alias = null, bool $group = false, null|\PhpQuerySql\PhpQuerySql::ORDERBY_ASCENDING|\PhpQuerySql\PhpQuerySql::ORDERBY_DESCENDING $sort = null)
  * @method self AddWhere(string $field, mixed $value)
+ * @method self AddWhereNonBindParam(string $field, mixed $value)
  * @method self LogicAnd()
  * @method self LogicOr() 
  * @method self SetIndexStart(?int $value)
@@ -61,6 +62,14 @@ class select
                     throw new SelectParametersSendInvalidException;
                 endif;
                 break;
+            case "AddWhereNonBindParam":
+                if (count($arguments) == 2) :
+                    $this->wherenbp[] = &$arguments;
+                    return $this;
+                else :
+                    throw new SelectParametersSendInvalidException;
+                endif;
+                break;
             case "LogicOr":
                 $this->logic = " OR ";
                 return $this;
@@ -97,6 +106,7 @@ class select
             case "init":
                 $this->field = [];
                 $this->where = [];
+                $this->wherenbp = [];
                 $this->LogicAnd()->SetIndexStart(null)->SetIndexCount(1);
                 break;
             default:
@@ -136,6 +146,9 @@ class select
                     foreach ($this->where as $key => $val) {
                         $awhere[] = "`$val[0]`=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":where" . $val[0] . $key);
                     }
+                    foreach ($this->wherenbp as $key => $val) {
+                        $awhere[] = "`$val[0]`=$val[1]";
+                    }
                     $sfield = implode(",", $afield);
                     $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
                     $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
@@ -158,6 +171,9 @@ class select
                     foreach ($this->where as $key => $val) {
                         $awhere[] = "[$val[0]]=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":where" . $val[0] . $key);
                     }
+                    foreach ($this->wherenbp as $key => $val) {
+                        $awhere[] = "`$val[0]`=$val[1]";
+                    }
                     $sfield = implode(",", $afield);
                     $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
                     $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
@@ -179,6 +195,9 @@ class select
                     foreach ($this->where as $key => $val) {
                         $awhere[] = "\"$val[0]\"=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":where" . $val[0] . $key);
                     }
+                    foreach ($this->wherenbp as $key => $val) {
+                        $awhere[] = "`$val[0]`=$val[1]";
+                    }
                     $sfield = implode(",", $afield);
                     $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
                     $sgroup = count($agroupby) > 0 ? "GROUP BY " . implode(",", $agroupby) : "";
@@ -199,6 +218,9 @@ class select
                     endif;
                     foreach ($this->where as $key => $val) {
                         $awhere[] = "\"$val[0]\"=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":where" . $val[0] . $key);
+                    }
+                    foreach ($this->wherenbp as $key => $val) {
+                        $awhere[] = "`$val[0]`=$val[1]";
                     }
                     $sfield = implode(",", $afield);
                     $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";;
