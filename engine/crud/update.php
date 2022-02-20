@@ -8,7 +8,7 @@ require_once implode(DIRECTORY_SEPARATOR, [__DIR__, "..", "builder.php"]);
  * 
  * @method self SetValue(string $field, mixed $value)
  * @method self AddWhere(string $field, mixed $value)
- * @method self AddWhereNonBindParam(string $field, mixed $value)
+ * @method self AddWhereCustom(string $value1, mixed $value2)
  * @method \PhpQuerySql\engine\builder GetParent()
  * @method self LogicOr()
  * @method self LogicAnd()
@@ -40,7 +40,7 @@ class update
                     throw new UpdateParametersSendInvalidException;
                 endif;
                 break;
-            case "AddWhereNonBindParam":
+            case "AddWhereCustom":
                 if (count($params) == 2) :
                     $this->wherenbp[] = &$params;
                     return $this;
@@ -103,7 +103,7 @@ class update
                         $prmW[] = "`$val[0]`=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
                     foreach ($this->wherenbp as $key => $val) {
-                        $awhere[] = "`$val[0]`=$val[1]";
+                        $awhere[] = "$val[0]=$val[1]";
                     }
                     return sprintf("UPDATE `%s` SET %s WHERE %s;", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                     break;
@@ -117,7 +117,7 @@ class update
                         $prmW[] = "[$val[0]]=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
                     foreach ($this->wherenbp as $key => $val) {
-                        $awhere[] = "`$val[0]`=$val[1]";
+                        $awhere[] = "$val[0]=$val[1]";
                     }
                     return sprintf("UPDATE [%s] SET %s WHERE %s;", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                     break;
@@ -131,7 +131,7 @@ class update
                         $prmW[] = "\"$val[0]\"=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
                     foreach ($this->wherenbp as $key => $val) {
-                        $awhere[] = "`$val[0]`=$val[1]";
+                        $awhere[] = "$val[0]=$val[1]";
                     }
                     return sprintf("UPDATE \"%s\" SET %s WHERE %s;", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                     break;
@@ -145,7 +145,7 @@ class update
                         $prmW[] = "\"$val[0]\"=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
                     foreach ($this->wherenbp as $key => $val) {
-                        $awhere[] = "`$val[0]`=$val[1]";
+                        $awhere[] = "$val[0]=$val[1]";
                     }
                     return sprintf("UPDATE \"%s\" SET %s WHERE %s;", $this->GetParent()->GetTables(), implode(",", $prmF), implode($this->logic, $prmW));
                     break;

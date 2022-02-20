@@ -7,7 +7,7 @@ require_once implode(DIRECTORY_SEPARATOR, [__DIR__, "..", "builder.php"]);
  * Kelas delete
  * @method \PhpQuerySql\engine\builder GetParent()
  * @method self AddWhere(string $field, mixed $value)
- * @method self AddWhereNonBindParam(string $field, mixed $value)
+ * @method self AddWhereCustom(string $value1, mixed $value2)
  * @method self LogicAnd()
  * @method self LogicOr() 
  */
@@ -34,7 +34,7 @@ class delete
                     throw new DeleteParametersSendInvalidException;
                 endif;
                 break;
-            case "AddWhereNonBindParam":
+            case "AddWhereCustom":
                 if (count($arguments) == 2) :
                     $this->wherenbp[] = &$arguments;
                     return $this;
@@ -82,7 +82,7 @@ class delete
                         $prmW[] = "`{$val[0]}`=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
                     foreach ($this->wherenbp as $key => $val) {
-                        $awhere[] = "`$val[0]`=$val[1]";
+                        $awhere[] = "$val[0]=$val[1]";
                     }
                     return sprintf("DELETE FROM `%s` WHERE %s;", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
                     break;
@@ -92,7 +92,7 @@ class delete
                         $prmW[] = "[{$val[0]}]=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
                     foreach ($this->wherenbp as $key => $val) {
-                        $awhere[] = "`$val[0]`=$val[1]";
+                        $awhere[] = "$val[0]=$val[1]";
                     }
                     return sprintf("DELETE FROM [%s] WHERE %s;", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
                     break;
@@ -100,6 +100,9 @@ class delete
                     $prmW = [];
                     foreach ($this->where as $key => $val) {
                         $prmW[] = "\"{$val[0]}\"=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
+                    }
+                    foreach ($this->wherenbp as $key => $val) {
+                        $awhere[] = "$val[0]=$val[1]";
                     }
                     return sprintf("DELETE FROM \"%s\" WHERE %s;", $this->GetParent()->GetTables(),  implode($this->logic, $prmW));
                     break;
@@ -109,7 +112,7 @@ class delete
                         $prmW[] = "\"{$val[0]}\"=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
                     foreach ($this->wherenbp as $key => $val) {
-                        $awhere[] = "`$val[0]`=$val[1]";
+                        $awhere[] = "$val[0]=$val[1]";
                     }
                     return sprintf("DELETE FROM \"%s\" WHERE %s;", $this->GetParent()->GetTables(), implode($this->logic, $prmW));
                     break;
