@@ -7,6 +7,7 @@ require_once "PhpQuerySql.php";
  * Kelas builder
  * 
  * @property generate\generate $Generate 
+ * @property crud\insertFrom $InsertFrom
  * @property crud\insert $Insert
  * @property crud\delete $Delete
  * @property crud\update $Update
@@ -28,6 +29,9 @@ class builder
     function __construct(\PhpQuerySql\PhpQuerySql &$parent)
     {
         $this->parent = $parent;
+
+        require_once implode(DIRECTORY_SEPARATOR, ["crud", "insertFrom.php"]);
+        $this->InsertFrom  = new crud\insertFrom($this);
 
         require_once implode(DIRECTORY_SEPARATOR, ["crud", "insert.php"]);
         $this->Insert  = new crud\insert($this);
@@ -161,6 +165,7 @@ class builder
                 break;
             case "Reset":
                 $this->Select->init();
+                $this->InsertFrom->init();
                 $this->Insert->init();
                 $this->Update->init();
                 $this->Delete->init();
