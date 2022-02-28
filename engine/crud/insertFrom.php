@@ -159,7 +159,7 @@ class insertFrom
                     $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";
                     $slimit = is_null($this->IndexStart) ? "" : (" LIMIT " . $this->IndexStart . (!is_null($this->IndexCount) ? " , " . $this->IndexCount : ""));
 
-                    return sprintf("INSERT INTO `%s` (%s) SELECT %s FROM %s AS `{$this->asSource}` %s %s;", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV), $this->tbFrom, $swhere, $slimit);
+                    return sprintf("INSERT INTO `%s` (%s) SELECT %s FROM `%s` AS `{$this->asSource}` %s %s;", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV), $this->tbFrom, $swhere, $slimit);
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_MSSQL:
                     $prmF = [];
