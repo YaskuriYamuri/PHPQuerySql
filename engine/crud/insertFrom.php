@@ -3,13 +3,12 @@
 namespace PhpQuerySql\engine\crud;
 
 require_once implode(DIRECTORY_SEPARATOR, [__DIR__, "..", "builder.php"]);
-
-use \PhpQuerySql\engine\builder as Builder;
+ 
 
 /**
  * Kelas insertFrom
  * 
- * @method self SetValue(string $fieldTo, insertFrom::VALUE_CURRENT_DATE|insertFrom::VALUE_CURRENT_TIME|insertFrom::VALUE_CURRENT_DATETIME|insertFromDirectValue|mixed $fieldFrom)
+ * @method self SetValue(string $fieldTo, \PhpQuerySql\engine\builder::VALUE_CURRENT_DATE|\PhpQuerySql\engine\builder::VALUE_CURRENT_TIME|\PhpQuerySql\engine\builder::VALUE_CURRENT_DATETIME|insertFromDirectValue|mixed $fieldFrom)
  * @method self SetFrom(string $tablename)
  * @method self AddWhere(string $field, mixed $value)
  * @method self AddWhereCustom(string $value1, mixed $value2)

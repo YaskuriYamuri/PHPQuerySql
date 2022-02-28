@@ -3,15 +3,14 @@
 namespace PhpQuerySql\engine\crud;
 
 require_once implode(DIRECTORY_SEPARATOR, [__DIR__, "..", "builder.php"]);
-use \PhpQuerySql\engine\builder as CBuilder;
 /**
  * Kelas insert
  * 
- * @method self SetValue(string $field, insert::VALUE_CURRENT_DATE|insert::VALUE_CURRENT_TIME|insert::VALUE_CURRENT_DATETIME|mixed $value)
+ * @method self SetValue(string $field, \PhpQuerySql\engine\builder::VALUE_CURRENT_DATE|\PhpQuerySql\engine\builder::VALUE_CURRENT_TIME|\PhpQuerySql\engine\builder::VALUE_CURRENT_DATETIME|mixed $value)
  * @method \PhpQuerySql\engine\builder GetParent()
  */
 class insert
-{ 
+{
     private $items, $parent;
     function __construct(\PhpQuerySql\engine\builder &$parent)
     {
@@ -31,10 +30,10 @@ class insert
                 if (count($params) <> 0) throw new InsertParametersSendInvalidException;
                 return $this->parent;
                 break;
-                case "init":
-                    $this->items = [];
-                    $this->prmPrefix = "prm_";
-                    break;
+            case "init":
+                $this->items = [];
+                $this->prmPrefix = "prm_";
+                break;
             default:
                 throw new InsertMethodUnknownException;
                 break;
@@ -44,8 +43,8 @@ class insert
     {
         $tmp = [];
         foreach ($this->items as $k => &$v) :
-            if (!$this->GetParent()->isNonParam($v)) 
-            $tmp[":" . $this->prmPrefix . $k] = $v;
+            if (!$this->GetParent()->isNonParam($v))
+                $tmp[":" . $this->prmPrefix . $k] = $v;
         endforeach;
         $paramArray = $tmp;
         return $this;
@@ -57,28 +56,28 @@ class insert
             switch ($this->GetParent()->GetParent()->GetBuilderType()):
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_MYSQL:
                     $prmF = [];
-                    $prmV = []; 
+                    $prmV = [];
                     foreach ($this->items as $key => $val) {
                         $prmF[] = "`$key`";
-                        $prmV[] =  $this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) : ":" . $this->prmPrefix . $key;
+                        $prmV[] =  $this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":" . $this->prmPrefix . $key;
                     }
                     return sprintf("INSERT INTO `%s` (%s) VALUES (%s);", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_MSSQL:
                     $prmF = [];
-                    $prmV = []; 
+                    $prmV = [];
                     foreach ($this->items as $key => $val) {
                         $prmF[] = "[$key]";
-                        $prmV[] = $this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) : ":" . $this->prmPrefix . $key;
+                        $prmV[] = $this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":" . $this->prmPrefix . $key;
                     }
                     return sprintf("INSERT INTO [%s] (%s) VALUES (%s);", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
                     break;
                 case \PhpQuerySql\PHPQUERYSQL_TYPE_POSTGRESql:
                     $prmF = [];
-                    $prmV = []; 
+                    $prmV = [];
                     foreach ($this->items as $key => $val) {
                         $prmF[] = "\"$key\"";
-                        $prmV[] = $this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":" . $this->prmPrefix . $key;
+                        $prmV[] = $this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":" . $this->prmPrefix . $key;
                     }
                     return sprintf("INSERT INTO \"%s\" (%s) VALUES (%s);", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
                     break;
@@ -87,7 +86,7 @@ class insert
                     $prmV = [];
                     foreach ($this->items as $key => $val) {
                         $prmF[] = "\"$key\"";
-                        $prmV[] = $this->GetParent()->isNonParam($val)? $this->GetParent()->nonParam($val,$this->GetParent()->GetParent()->GetBuilderType()) :":" . $this->prmPrefix . $key;
+                        $prmV[] = $this->GetParent()->isNonParam($val) ? $this->GetParent()->nonParam($val, $this->GetParent()->GetParent()->GetBuilderType()) : ":" . $this->prmPrefix . $key;
                     }
                     return sprintf("INSERT INTO \"%s\" (%s) VALUES (%s);", $this->GetParent()->GetTables(), implode(",", $prmF), implode(",", $prmV));
                     break;
