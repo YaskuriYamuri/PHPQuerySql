@@ -67,19 +67,15 @@ class insertMultiple
     }
     public function PDOBindParam(array &$paramArray)
     {
-        $tmp = [];
-        // foreach ($this->items as $k => &$v) :
-        //     if (!$this->GetParent()->isNonParam($v)) 
-        //     $tmp[":" . $this->prmPrefix . $k] = $v;
-        // endforeach;
+        $tmp = []; 
         $fieldMain  = array_keys($this->items[0]->items);
-        foreach ($this->items as $k => $item) : 
+        foreach ($this->items as $k => $item) :
             if (!($item instanceof insertMultipleValue)) throw new \Exception("Item invalid type");
             /** @var insertMultipleValue $item */
             if (count($item->items) != count($fieldMain)) throw new \Exception("Item invalid length");
             foreach ($fieldMain as $fk => $fm) :
-                $tmp[":{$this->prmPrefix}{$k}{$fm}{$fk}"] = $item->GetValue($fm);
-            endforeach; 
+                if (!$this->GetParent()->isNonParam($item->GetValue($fm)))    $tmp[":{$this->prmPrefix}{$k}{$fm}{$fk}"] = $item->GetValue($fm);
+            endforeach;
         endforeach;
         $paramArray = $tmp;
         return $this;
