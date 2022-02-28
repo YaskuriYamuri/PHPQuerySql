@@ -150,10 +150,10 @@ class insertFrom
                      }
 
                     foreach ($this->where as $key => $val) {
-                        $awhere[] = "[{$this->asSource}].[{$val[0]}]=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
+                        $awhere[] = "`{$this->asSource}`.`{$val[0]}`=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":{$this->prefixWhere}" . $val[0] . $key);
                     }
                     foreach ($this->wherenbp as $key => $val) {
-                        $awhere[] = "[{$val[0]}]={$val[1]}";
+                        $awhere[] = "{$val[0]}={$val[1]}";
                     }
 
                     $swhere = count($awhere) > 0 ? "WHERE " . implode($this->logic, $awhere) : "";
