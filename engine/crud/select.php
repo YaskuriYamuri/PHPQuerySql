@@ -11,6 +11,7 @@ require_once implode(DIRECTORY_SEPARATOR, [__DIR__, "..", "builder.php"]);
  * @method self SetField(string $field, ?string $alias = null)
  * @method self SetField(string $field, ?string $alias = null, bool $group = false)
  * @method self SetField(string $field, ?string $alias = null, bool $group = false, null|\PhpQuerySql\PhpQuerySql::ORDERBY_ASCENDING|\PhpQuerySql\PhpQuerySql::ORDERBY_DESCENDING $sort = null)
+ * @method self AddWhere(\PhpQuerySql\engine\BetweenWhere $param)
  * @method self AddWhere(string $field, mixed $value)
  * @method self AddWhereCustom(string $value1, mixed $value2)
  * @method self LogicAnd()
@@ -55,12 +56,19 @@ class select
                 return $this;
                 break;
             case "AddWhere":
-                if (count($arguments) == 2) :
-                    $this->where[] = &$arguments;
-                    return $this;
-                else :
-                    throw new SelectParametersSendInvalidException;
-                endif;
+                switch (count($arguments)):
+                    case 1:
+                        # \PhpQuerySql\engine\BetweenWhere
+                        $this->where[] = &$arguments[0];
+                        break;
+                    case 2:
+                        $this->where[] = &$arguments;
+                        break;
+                    default:
+                        new SelectParametersSendInvalidException;
+                        break;
+                endswitch;
+                return $this;
                 break;
             case "AddWhereCustom":
                 if (count($arguments) == 2) :
@@ -118,7 +126,11 @@ class select
     {
         $tmp = [];
         foreach ($this->where as $k => &$v) :
-            if (!$this->GetParent()->isNonParam($v[1]))  $tmp[":where$v[0]$k"] = $v[1];
+            if ($v instanceof \PhpQuerySql\engine\BetweenWhere) :
+                $tmp[":where{$v->field}val1_{$k}"] = $v->value1;
+                $tmp[":where{$v->field}val2_{$k}"] = $v->value2;
+            elseif (!$this->GetParent()->isNonParam($v[1])) :  $tmp[":where$v[0]$k"] = $v[1];
+            endif;
         endforeach;
         $paramArray = $tmp;
         return $this;
@@ -143,8 +155,12 @@ class select
                     else :
                         $afield[] = "*";
                     endif;
-                    foreach ($this->where as $key => $val) {
-                        $awhere[] = "`$val[0]`=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":where" . $val[0] . $key);
+                    foreach ($this->where as $key => &$val) {
+                        if ($val instanceof \PhpQuerySql\engine\BetweenWhere) :
+                            $awhere[] = "`{$val->field}` BETWEEN " . ($this->GetParent()->isNonParam($val->value1) ? $this->GetParent()->nonParam($val->value1, $this->GetParent()->GetParent()->GetBuilderType()) : ":where{$val->field}val1_{$key}") . " AND " . ($this->GetParent()->isNonParam($val->value2) ? $this->GetParent()->nonParam($val->value2, $this->GetParent()->GetParent()->GetBuilderType()) : ":where{$val->field}val2_{$key}");
+                        else :
+                            $awhere[] = "`$val[0]`=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":where" . $val[0] . $key);
+                        endif;
                     }
                     foreach ($this->wherenbp as $key => $val) {
                         $awhere[] = "$val[0]=$val[1]";
@@ -169,7 +185,11 @@ class select
                         $afield[] = "*";
                     endif;
                     foreach ($this->where as $key => $val) {
-                        $awhere[] = "[$val[0]]=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":where" . $val[0] . $key);
+                        if ($val instanceof \PhpQuerySql\engine\BetweenWhere) :
+                            $awhere[] = "[{$val->field}] BETWEEN " . ($this->GetParent()->isNonParam($val->value1) ? $this->GetParent()->nonParam($val->value1, $this->GetParent()->GetParent()->GetBuilderType()) : ":where{$val->field}val1_{$key}") . " AND " . ($this->GetParent()->isNonParam($val->value2) ? $this->GetParent()->nonParam($val->value2, $this->GetParent()->GetParent()->GetBuilderType()) : ":where{$val->field}val2_{$key}");
+                        else :
+                            $awhere[] = "[{$val[0]}]=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":where{$val[0]}{$key}");
+                        endif;
                     }
                     foreach ($this->wherenbp as $key => $val) {
                         $awhere[] = "$val[0]=$val[1]";
@@ -193,7 +213,10 @@ class select
                         $afield[] = "*";
                     endif;
                     foreach ($this->where as $key => $val) {
-                        $awhere[] = "\"$val[0]\"=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":where" . $val[0] . $key);
+                        if ($val instanceof \PhpQuerySql\engine\BetweenWhere) :
+                            $awhere[] = "\"{$val->field}\" BETWEEN " . ($this->GetParent()->isNonParam($val->value1) ? $this->GetParent()->nonParam($val->value1, $this->GetParent()->GetParent()->GetBuilderType()) : ":where{$val->field}val1_{$key}") . " AND " . ($this->GetParent()->isNonParam($val->value2) ? $this->GetParent()->nonParam($val->value2, $this->GetParent()->GetParent()->GetBuilderType()) : ":where{$val->field}val2_{$key}");
+                        else :
+                        $awhere[] = "\"$val[0]\"=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":where{$val[0]}{$key}"); endif;
                     }
                     foreach ($this->wherenbp as $key => $val) {
                         $awhere[] = "$val[0]=$val[1]";
@@ -217,7 +240,11 @@ class select
                         $afield[] = "*";
                     endif;
                     foreach ($this->where as $key => $val) {
-                        $awhere[] = "\"$val[0]\"=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":where" . $val[0] . $key);
+                        if ($val instanceof \PhpQuerySql\engine\BetweenWhere) :
+                            $awhere[] = "\"{$val->field}\" BETWEEN " . ($this->GetParent()->isNonParam($val->value1) ? $this->GetParent()->nonParam($val->value1, $this->GetParent()->GetParent()->GetBuilderType()) : ":where{$val->field}val1_{$key}") . " AND " . ($this->GetParent()->isNonParam($val->value2) ? $this->GetParent()->nonParam($val->value2, $this->GetParent()->GetParent()->GetBuilderType()) : ":where{$val->field}val2_{$key}");
+                        else :
+                        $awhere[] = "\"$val[0]\"=" . ($this->GetParent()->isNonParam($val[1]) ? $this->GetParent()->nonParam($val[1], $this->GetParent()->GetParent()->GetBuilderType()) : ":where{$val[0]}{$key}");
+                        endif;
                     }
                     foreach ($this->wherenbp as $key => $val) {
                         $awhere[] = "$val[0]=$val[1]";

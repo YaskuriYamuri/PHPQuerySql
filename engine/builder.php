@@ -184,7 +184,19 @@ class builder
         return (array)$this;
     }
 }
-
+/**
+ * Kelas untuk where Between
+ * @property string $field
+ * @property string $value1
+ * @property string $value2
+ */
+class BetweenWhere{
+    public function __construct($field,$value1,$value2) {
+        $this->field = $field;
+        $this->value1 = $value1;
+        $this->value2= $value2;
+    }
+}
 class ParameterSendNotValid extends \Exception
 {
     public function __construct()
